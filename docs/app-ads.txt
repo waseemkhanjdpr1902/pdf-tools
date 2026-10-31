@@ -1,0 +1,1 @@
+# Production advertising is not enabled. Add the exact authorised-seller line from your AdMob account before launch.
