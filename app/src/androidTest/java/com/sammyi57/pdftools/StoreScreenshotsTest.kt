@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
@@ -57,9 +58,19 @@ class StoreScreenshotsTest {
         val chosen = if (id == "merge") samples.take(2) else samples.take(1)
         Drafts.set(ToolDraft(id, chosen.map { DraftFile(it.name, it.path, it.length()) }, defaults(tool.opts)))
       }
-      val open = checkNotNull(device.wait(Until.findObject(By.textContains("Still open")), 10000))
-      assertNotNull("Resume control for $id", open)
-      open.click()
+      Thread.sleep(1800)
+      var clicked = false
+      repeat(8) {
+        if (!clicked) {
+          try {
+            val control = checkNotNull(device.wait(Until.findObject(By.textContains("Still open")), 10000))
+            val bounds = control.visibleBounds
+            device.click(bounds.centerX(), bounds.centerY())
+            clicked = true
+          } catch (_: StaleObjectException) { Thread.sleep(500) }
+        }
+      }
+      check(clicked) { "Could not open $id" }
       assertNotNull("Tool title for $id", device.wait(Until.findObject(By.text(tool.title)), 10000))
       capture(filename)
       device.pressBack()

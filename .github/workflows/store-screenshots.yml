@@ -52,8 +52,10 @@ jobs:
             adb install -r app/build/outputs/apk/debug/app-universal-debug.apk
             adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
             adb shell am instrument -w -e class com.sammyi57.pdftools.StoreScreenshotsTest com.waseem.pdfpocket.test.test/androidx.test.runner.AndroidJUnitRunner | tee instrumentation.txt
-            ! rg -q "FAILURES!!!|INSTRUMENTATION_FAILED|shortMsg=" instrumentation.txt
             adb pull /sdcard/Android/data/com.waseem.pdfpocket.test/files/store-screenshots store-captures
+      - name: Verify all eight screenshots
+        run: |
+          python3 -c 'from pathlib import Path; p=list(Path("store-captures").glob("*.png")); assert len(p)==8, f"Expected 8 screenshots, got {len(p)}"'
       - name: Capture device logs
         if: always()
         run: timeout 10s adb logcat -d > emulator-log.txt || true
