@@ -56,7 +56,7 @@ jobs:
             adb pull /sdcard/Android/data/com.waseem.pdfpocket.test/files/store-screenshots store-captures
       - name: Capture device logs
         if: always()
-        run: adb logcat -d > emulator-log.txt || true
+        run: timeout 10s adb logcat -d > emulator-log.txt || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
