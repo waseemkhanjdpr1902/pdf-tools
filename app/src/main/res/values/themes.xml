@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">PDF Tools</string>
+  <string name="app_name">PDF Pocket</string>
   <color name="window">#F6F2EE</color>
   <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
     <item name="android:windowBackground">@color/window</item>

@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import java.io.File
 
-// Outputs live in the app's files folder ("PDF Tools", one level of folders) so they survive restarts; the cache can
+// Outputs live in the app's files folder ("PDF Pocket", one level of folders) so they survive restarts; the cache can
 // be purged by the OS. The same folder the Expo app used, so its files carry over.
 
 data class Saved(val name: String, val path: String, val size: Long, val modified: Long)
@@ -45,7 +45,7 @@ object Store {
 private val BAD = Regex("[\\\\/:*?\"<>|]+")
 fun cleanName(s: String) = s.replace(BAD, "_").trim()
 
-fun rootFolder(): File = File(appContext.filesDir, "PDF Tools").apply { mkdirs() }
+fun rootFolder(): File = File(appContext.filesDir, "PDF Pocket").apply { mkdirs() }
 
 fun createFolder(name: String): Folder {
   val clean = cleanName(name).ifEmpty { "New Folder" }
@@ -72,7 +72,7 @@ fun renameFolder(path: String, newName: String) {
 
 private fun insideRoot(path: String) = File(path).canonicalPath.startsWith(rootFolder().canonicalPath + File.separator)
 
-// Only ever deletes inside the app's "PDF Tools" folder: never a file the user picked from their own storage.
+// Only ever deletes inside the app's "PDF Pocket" folder: never a file the user picked from their own storage.
 fun removeFolder(path: String) {
   if (!insideRoot(path)) return
   File(path).deleteRecursively()

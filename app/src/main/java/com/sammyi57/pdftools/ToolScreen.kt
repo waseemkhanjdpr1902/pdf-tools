@@ -227,7 +227,7 @@ fun ToolScreen(id: String, resume: Boolean) {
     if (files.isEmpty()) {
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         PickerCard("Device Storage", "Drive, Downloads, Phone", I.fileDocumentOutline, Brand.cool, Brand.cherry, Modifier.weight(1f), pickDevice)
-        PickerCard("App Files", if (Backup.state.enabled) "Saved here or in Drive" else "Saved in PDF Tools", I.folderOutline, c.accentSoft, c.accent, Modifier.weight(1f)) { appFiles = true }
+        PickerCard("App Files", if (Backup.state.enabled) "Saved here or in Drive" else "Saved in PDF Pocket", I.folderOutline, c.accentSoft, c.accent, Modifier.weight(1f)) { appFiles = true }
       }
     } else {
       Group(Modifier.animateContentSize()) {

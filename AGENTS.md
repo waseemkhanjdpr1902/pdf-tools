@@ -1,7 +1,7 @@
 # PDF Tools: notes for coding agents
 
 A native Android app in Kotlin and Jetpack Compose (the Gradle project is the repo root; the app module is `app/`).
-Package and application id: `com.sammyi57.pdftools`.
+Source namespace: `com.sammyi57.pdftools`; application id: `com.waseem.pdfpocket` (debug adds `.debug`).
 
 ## Build and check
 

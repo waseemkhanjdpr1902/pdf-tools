@@ -113,7 +113,7 @@ fun AppFilesPicker(multi: Boolean, already: List<String>, onClose: () -> Unit, o
               when {
                 needle.isNotEmpty() -> "Search in App Files"
                 folder != null -> folder!!
-                onDrive -> "Google Drive · PDF Tools folder"
+                onDrive -> "Google Drive · PDF Pocket folder"
                 else -> "App Files · Saved documents"
               },
               Type.small, c.sub, maxLines = 1,
@@ -184,7 +184,7 @@ fun AppFilesPicker(multi: Boolean, already: List<String>, onClose: () -> Unit, o
             when {
               needle.isNotEmpty() -> "No PDF files found matching \"$query\"."
               folder != null -> "PDFs saved or moved into this folder will appear here."
-              onDrive -> "PDFs in the PDF Tools folder of your Google Drive will appear here."
+              onDrive -> "PDFs in the PDF Pocket folder of your Google Drive will appear here."
               else -> "PDFs saved from your tools will appear here."
             },
           )

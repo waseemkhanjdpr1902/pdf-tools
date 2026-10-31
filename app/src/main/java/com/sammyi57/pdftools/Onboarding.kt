@@ -127,7 +127,7 @@ private fun OnboardingBody(themeDark: Boolean, onDone: () -> Unit) {
     onDone()
   }
   val label = listOf("Get started", "Continue", "That's my look")[page]
-  val line = listOf("No account needed. Everything stays on this phone.", "Pin as many as you like. Change these anytime.", "A good fit can change. Switch anytime in Settings.")[page]
+  val line = listOf("No app account needed. PDF tools process files on this phone.", "Pin as many as you like. Change these anytime.", "A good fit can change. Switch anytime in Settings.")[page]
 
   Column(Modifier.fillMaxSize().background(Color.White).statusBarsPadding().navigationBarsPadding()) {
     Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -175,7 +175,7 @@ private fun PageWelcome() {
         ),
       )
     }
-    T("PDF Tools", Type.title.copy(fontSize = 21.sp, lineHeight = 28.sp, letterSpacing = (-0.4).sp), DARK, Modifier.align(Alignment.TopCenter).padding(top = 14.dp))
+    T("PDF Pocket", Type.title.copy(fontSize = 21.sp, lineHeight = 28.sp, letterSpacing = (-0.4).sp), DARK, Modifier.align(Alignment.TopCenter).padding(top = 14.dp))
 
     Sticky(Color(0xFFFFF0B0), -2f, Modifier.offset(x = (-8).dp, y = h * 0.03f).size(112.dp, 124.dp), fold = true) {
       Icon(I.pin, 26.dp, Color(0xFFE5483B), Modifier.align(Alignment.TopStart).offset(x = 50.dp, y = (-13).dp).graphicsLayer { rotationZ = 22f })

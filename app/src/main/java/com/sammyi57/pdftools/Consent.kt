@@ -44,60 +44,15 @@ import kotlinx.coroutines.delay
 // Shown once, before anything else, on a fresh install, and again from Settings to read back. One plain screen that
 // fits without scrolling: what the app does with your files, then a tick for each document.
 
-// The contact address shown in the privacy policy (and on its web page, built from this file by scripts/build_policy_page.py).
-private const val CONTACT = "bhingesamarth@gmail.com"
-
 private val POINTS = listOf(
-  I.cellphoneLock to "Every tool runs on this phone",
-  I.accountOffOutline to "No account, no tracking, no ads",
-  I.googleDrive to "Google Drive backup is optional",
-  I.wifiOff to "Works with no connection",
+  I.cellphoneLock to "PDF tools process files on this phone",
+  I.accountOffOutline to "Free tools; optional ad-free Premium",
+  I.googleDrive to "Google Drive sync is optional",
+  I.wifiOff to "Document tools work offline",
 )
 
-private val PRIVACY = """1. What we collect
-Nothing. PDF Tools has no accounts, no analytics, no advertising and no crash reporting. We do not collect, receive or store your documents, your name, your email address or any identifier.
-
-2. Where your files live
-Every tool runs entirely on this device. Saved PDFs are kept in the app's own private storage, which other apps cannot read. They are never sent to us, because there is nowhere to send them to.
-
-3. Google Drive backup
-Off unless you turn it on. When you do, the app signs in to the Google account you choose and copies your saved PDFs to your own Google Drive. Those files travel from this phone to Google directly. You can disconnect at any time in Settings, which revokes the app's access to your account. What Google does with files in your Drive is covered by Google's own privacy policy.
-
-4. Permissions
-Camera is used only while you are scanning a document. Photos is used only when you pick an image to turn into a PDF or to place a signature. Neither is used in the background, and the app asks the first time it needs each one.
-
-5. Reading text from scans
-Making a scanned PDF searchable uses a text recognition model built into the app. The page images and the text read from them never leave the device, and it needs no connection.
-
-6. Children
-The app is not directed at children under 13, and collects no data from anyone of any age.
-
-7. Changes
-If this policy changes in a way that matters, the app will show it to you again before you carry on.
-
-8. Contact
-Questions about this policy: $CONTACT"""
-
-private val TERMS = """1. The app
-PDF Tools is provided free of charge, as is, for use on your own device.
-
-2. Your files are your responsibility
-The app changes documents you choose, and some changes cannot be undone: redaction removes content for good, a password locks a file, cropping discards part of a page. Keep your own copy of anything you cannot afford to lose. We have no copy and cannot recover one for you.
-
-3. Acceptable use
-Do not use the app to alter documents in order to deceive anyone, to forge a signature, or for anything unlawful where you live. Placing a signature image on a document is not a statement about that document's legal standing — whether a signed PDF binds anyone depends on your local law and on the parties involved.
-
-4. No warranty
-The app comes with no warranty of any kind. Page detection, text recognition and compression are approximate by their nature, and any tool may contain errors. Check the result before you rely on it.
-
-5. Limitation of liability
-So far as the law allows, we are not liable for lost data, lost profits, or any indirect or consequential loss arising from your use of the app.
-
-6. Third-party services
-Google Drive backup is optional and is governed by Google's own terms of service.
-
-7. Changes
-If these terms change, the app will ask you to accept them again. Continuing to use it means you accept the version shown."""
+private val PRIVACY = AppPolicy.privacy
+private val TERMS = AppPolicy.terms
 
 private val DOCS = mapOf("privacy" to ("Privacy Policy" to PRIVACY), "terms" to ("Terms & Conditions" to TERMS))
 
@@ -133,8 +88,8 @@ private fun ConsentBody(onAccept: (() -> Unit)?, onClose: (() -> Unit)?) {
             .clip(RoundedCornerShape(26.dp)).glow(c.hero, 0.85f, 1f),
           contentAlignment = Alignment.Center,
         ) { Icon(I.filePdfBox, 46.dp, Color.White) }
-        T("PDF Tools", Type.largeTitle, modifier = Modifier.padding(top = 18.dp))
-        T("Your documents never leave this phone.", Type.body, c.sub, Modifier.padding(top = 4.dp), align = TextAlign.Center)
+        T("PDF Pocket", Type.largeTitle, modifier = Modifier.padding(top = 18.dp))
+        T("Local PDF tools. Optional backup. Clear choices.", Type.body, c.sub, Modifier.padding(top = 4.dp), align = TextAlign.Center)
         Column(Modifier.fillMaxWidth().padding(top = 30.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
           POINTS.forEachIndexed { i, (glyph, label) -> Stagger(i) { Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(34.dp).background(c.sunken, RoundedCornerShape(Radius.tile)), contentAlignment = Alignment.Center) { Icon(glyph, 18.dp, c.sub) }

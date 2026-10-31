@@ -175,6 +175,9 @@ private fun Root() {
   val controller = rememberNavController()
   val nav = remember { Nav(controller) }
   var agreed by remember { mutableStateOf(Terms.accepted()) } // read before the first frame: no flash of the terms
+  LaunchedEffect(agreed) {
+    if (agreed) hostActivity?.let { Premium.start(it); Advertising.start(it) }
+  }
   DisposableEffect(nav) {
     Viewer.open = { path, name -> nav.viewer(path, name) }
     onDispose { Viewer.open = null }
@@ -334,8 +337,8 @@ private fun NavPill(haze: HazeState) {
 
 // Whether the terms and privacy policy were accepted on this device. Raising VERSION shows them again after an update.
 object Terms {
-  const val VERSION = 2
-  const val UPDATED = "20 October 2026"
+  const val VERSION = 3
+  const val UPDATED = "31 October 2026"
   private val file get() = File(appContext.filesDir, "consent.json") // same file the Expo app used
 
   fun accepted(): Boolean = try {

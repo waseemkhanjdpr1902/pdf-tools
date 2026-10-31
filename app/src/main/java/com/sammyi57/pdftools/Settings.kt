@@ -28,8 +28,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
-private const val FEEDBACK_FORM = "https://forms.gle/Fc3RHMTXAiA8fT5VA"
-
 @Composable
 fun SettingsTab() {
   val files = remember(Store.version) { listAllFiles() }
@@ -83,6 +81,8 @@ fun SettingsTab() {
     GroupLabel("Google Drive")
     DriveBackup()
 
+    PremiumPanel()
+
     GroupLabel("Privacy")
     Group {
       if (Backup.state.enabled) {
@@ -90,7 +90,11 @@ fun SettingsTab() {
       } else {
         ListRow("Files stay on this phone", first = true, lead = { Lead(I.cellphoneLock) }, subtitle = "Every tool runs on the device. PDFs leave it only if you turn on Google Drive sync.")
       }
-      ListRow("No account needed, no tracking", lead = { Lead(I.accountOffOutline) }, subtitle = "No sign-up, no analytics, no ads.")
+      ListRow("No app account needed", lead = { Lead(I.accountOffOutline) }, subtitle = "PDF processing is local. Google handles ads and billing; RevenueCat verifies Premium purchases. See the privacy policy.")
+      if (Advertising.privacyOptionsRequired) {
+        ListRow("Advertising privacy choices", lead = { Lead(I.shieldCheckOutline) }, chevron = true,
+          onClick = { hostActivity?.let { Advertising.privacyOptions(it) } })
+      }
       ListRow("Works offline", lead = { Lead(I.airplane) }, subtitle = "Every tool works in airplane mode. Syncing waits until you're online.")
     }
 
@@ -100,8 +104,8 @@ fun SettingsTab() {
       ListRow("PDF engine", lead = { Lead(I.codeTags) }, value = "PdfBox")
       ListRow("Privacy Policy & Terms", lead = { Lead(I.shieldCheckOutline) }, chevron = true, onClick = { terms = true })
       ListRow(
-        "Send feedback", lead = { Lead(I.messageTextOutline) }, subtitle = "Tell us what to fix or add. Opens a short form.",
-        onClick = { openUrl(FEEDBACK_FORM) },
+        "Support & feedback", lead = { Lead(I.messageTextOutline) }, subtitle = if (BuildConfig.SUPPORT_EMAIL.isBlank()) "Open the project support page. Do not upload private documents." else "Email support. Do not include private documents.",
+        onClick = { openUrl(supportUrl()) },
       ) { Icon(I.openInNew, 18.dp, c.faint) }
     }
   }
@@ -109,12 +113,12 @@ fun SettingsTab() {
   if (terms) FullSheet({ terms = false }) { Consent(onClose = { terms = false }) }
   if (clearConfirm) {
     ConfirmDialog(
-      "Delete all saved files?", "${plural(files.size, "file")} made in PDF Tools will be removed. The PDFs you picked as input are not touched.",
+      "Delete all saved files?", "${plural(files.size, "file")} made in PDF Pocket will be removed. The PDFs you picked as input are not touched.",
       "Delete all", danger = true, requireTyping = "confirm", onDismiss = { clearConfirm = false },
     ) { clearFiles() }
   }
   if (clearChoice) {
-    AppDialog({ clearChoice = false }, "Delete all saved files?", "${plural(files.size, "file")} made in PDF Tools. They're also in your Google Drive.") {
+    AppDialog({ clearChoice = false }, "Delete all saved files?", "${plural(files.size, "file")} made in PDF Pocket. They're also in your Google Drive.") {
       Column(Modifier.padding(top = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Btn("Delete from this phone only", Modifier.fillMaxWidth(), I.cellphoneRemove, BtnKind.Secondary) { clearAll(true) }
         Btn("Delete from phone and Drive", Modifier.fillMaxWidth(), I.deleteOutline, BtnKind.Danger) { clearChoice = false; driveConfirm = true }
@@ -127,7 +131,7 @@ fun SettingsTab() {
   }
   if (driveConfirm) {
     ConfirmDialog(
-      "Delete from phone and Drive?", "${plural(files.size, "file")} will be removed from this phone. Everything in the PDF Tools folder in your Drive, folders and Drive-only files included, goes to Drive's Trash for 30 days.",
+      "Delete from phone and Drive?", "${plural(files.size, "file")} will be removed from this phone. Everything in the PDF Pocket folder in your Drive, folders and Drive-only files included, goes to Drive's Trash for 30 days.",
       "Delete all", danger = true, requireTyping = "confirm", onDismiss = { driveConfirm = false },
     ) { wipeBoth() }
   }
@@ -181,13 +185,13 @@ private fun DriveBackup() {
   if (problem.isNotEmpty()) T(problem, Type.small, c.accent, Modifier.padding(top = 8.dp))
   if (state.enabled) {
     T(
-      "Syncs both ways whenever you save, rename, move or delete a file, and when you open Files. Deleted files go to Drive's Trash for 30 days. Only files made by PDF Tools are visible to the app in your Drive.",
+      "Syncs both ways whenever you save, rename, move or delete a file, and when you open Files. Deleted files go to Drive's Trash for 30 days. Only files made by PDF Pocket are visible to the app in your Drive.",
       Type.small, c.sub, Modifier.padding(top = 8.dp),
     )
   }
   if (confirmOff) {
     ConfirmDialog(
-      "Turn off Drive sync?", "PDF Tools signs out of Google Drive. Your files stay on this phone and in your Drive, but stop syncing.",
+      "Turn off Drive sync?", "PDF Pocket signs out of Google Drive. Your files stay on this phone and in your Drive, but stop syncing.",
       "Turn off", onDismiss = { confirmOff = false },
     ) { scope.launch { busy = true; Backup.disable(); busy = false } }
   }

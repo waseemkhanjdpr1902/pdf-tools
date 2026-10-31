@@ -354,9 +354,9 @@ private fun ExportDialog(pdf: Saved, word: Boolean, onClose: () -> Unit) {
           }
           option("open", I.openInNew, "Open", if (word) "In your Word or docs app" else if (many) "A ZIP with one JPEG per page" else "In your gallery or photo app") { openFile(f.path, f.name); null }
           option("device", I.cellphoneArrowDown, "Save to device", "Pick a folder, like Downloads") { saveToDevice(f).takeIf { it.isNotEmpty() }?.let { "Saved to $it" } }
-          option("drive", I.googleDrive, "Save to Google Drive", if (drive.enabled) "PDF Tools folder · ${drive.email}" else "Turn on Drive sync in Settings first") {
+          option("drive", I.googleDrive, "Save to Google Drive", if (drive.enabled) "PDF Pocket folder · ${drive.email}" else "Turn on Drive sync in Settings first") {
             if (!drive.enabled) { onClose(); nav.show(Tab.Settings); null }
-            else try { Backup.saveCopy(f, mimeOf(f.name)); "Uploaded to PDF Tools in your Drive" } catch (e: Exception) { throw UserError(Backup.describe(e)) }
+            else try { Backup.saveCopy(f, mimeOf(f.name)); "Uploaded to PDF Pocket in your Drive" } catch (e: Exception) { throw UserError(Backup.describe(e)) }
           }
           option("share", I.shareVariantOutline, "Share", "Send to an app or contact") { share(f.path, f.name); null }
         }
@@ -365,7 +365,7 @@ private fun ExportDialog(pdf: Saved, word: Boolean, onClose: () -> Unit) {
   }
 }
 
-// Files → Google Drive: what's in the synced "PDF Tools" folder. Files only in Drive stay there until chosen: tap the
+// Files → Google Drive: what's in the synced "PDF Pocket" folder. Files only in Drive stay there until chosen: tap the
 // download icon, or hold a file to select several (a whole day at once) and download them.
 @Composable
 private fun ColumnScope.DriveFiles(query: String, folder: String?, onOpenFolder: (String) -> Unit) {
