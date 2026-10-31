@@ -52,7 +52,7 @@ android {
     // test run never touches its files: ./gradlew :app:connectedDebugAndroidTest -PsideBySide
     debug {
       applicationIdSuffix = ".debug"
-      buildConfigField("boolean", "ADS_ENABLED", "true")
+      buildConfigField("boolean", "ADS_ENABLED", (!project.hasProperty("storeScreenshots")).toString())
       buildConfigField("String", "BANNER_AD_UNIT_ID", quoted("ca-app-pub-3940256099942544/6300978111"))
       if (project.hasProperty("sideBySide")) applicationIdSuffix = ".test"
     }
@@ -137,6 +137,7 @@ dependencies {
   testImplementation("junit:junit:4.13.2")
   androidTestImplementation("androidx.test:runner:1.7.0")
   androidTestImplementation("androidx.test.ext:junit:1.3.0")
+  androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
 }
 
 // Verification builds may be unsigned/test-only. Store publishing must use this explicit task.
