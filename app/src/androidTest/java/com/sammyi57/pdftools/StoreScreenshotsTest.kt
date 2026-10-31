@@ -80,7 +80,7 @@ class StoreScreenshotsTest {
     val frame = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
     assertEquals(1080, frame.width)
     assertEquals(1920, frame.height)
-    val rgb = frame.copy(Bitmap.Config.RGB_565, false)
+    val rgb = checkNotNull(frame.copy(Bitmap.Config.RGB_565, false))
     File(output, "$name.png").outputStream().use { rgb.compress(Bitmap.CompressFormat.PNG, 100, it) }
     rgb.recycle()
     frame.recycle()
