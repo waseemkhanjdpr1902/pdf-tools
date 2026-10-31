@@ -5,6 +5,10 @@ plugins {
   id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+fun launchSetting(name: String, fallback: String = ""): String =
+  providers.gradleProperty(name).orElse(providers.environmentVariable(name)).getOrElse(fallback)
+fun quoted(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+
 android {
   namespace = "com.sammyi57.pdftools"
   compileSdk = 36
@@ -12,11 +16,16 @@ android {
 
   defaultConfig {
     // Same id and storage layout as the Expo app, so this build installs over it and keeps its files, scans and Drive link.
-    applicationId = "com.sammyi57.pdftools"
+    applicationId = "com.waseem.pdfpocket"
     minSdk = 24
     targetSdk = 36
     versionCode = 3
     versionName = "2.1.0"
+    buildConfigField("String", "REVENUECAT_PUBLIC_KEY", quoted(launchSetting("REVENUECAT_PUBLIC_KEY")))
+    buildConfigField("String", "PREMIUM_ENTITLEMENT", quoted("premium"))
+    buildConfigField("String", "SUPPORT_EMAIL", quoted(launchSetting("SUPPORT_EMAIL")))
+    buildConfigField("String", "WEBSITE_URL", quoted(launchSetting("WEBSITE_URL")))
+    manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
     // OpenCV ships a native lib per ABI; one keeps the APK small. `-PallAbis` (the release workflow) builds an APK per
     // ABI plus a universal one instead.
     if (!project.hasProperty("allAbis")) ndk { abiFilters += "arm64-v8a" }
@@ -42,9 +51,15 @@ android {
     // `-PsideBySide` installs the debug build (and its on-device tests) next to the real app instead of over it, so a
     // test run never touches its files: ./gradlew :app:connectedDebugAndroidTest -PsideBySide
     debug {
+      applicationIdSuffix = ".debug"
+      buildConfigField("boolean", "ADS_ENABLED", "true")
+      buildConfigField("String", "BANNER_AD_UNIT_ID", quoted("ca-app-pub-3940256099942544/6300978111"))
       if (project.hasProperty("sideBySide")) applicationIdSuffix = ".test"
     }
     release {
+      buildConfigField("boolean", "ADS_ENABLED", launchSetting("LIVE_ADS_ENABLED", "false").toBoolean().toString())
+      buildConfigField("String", "BANNER_AD_UNIT_ID", quoted(launchSetting("ADMOB_BANNER_ID")))
+      manifestPlaceholders["admobAppId"] = launchSetting("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
       isMinifyEnabled = true
       isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -65,7 +80,7 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-  buildFeatures { compose = true }
+  buildFeatures { compose = true; buildConfig = true }
   packaging { jniLibs { useLegacyPackaging = true } }
 }
 
@@ -82,6 +97,9 @@ kotlin {
 }
 
 dependencies {
+  implementation("com.google.android.gms:play-services-ads:25.5.0")
+  implementation("com.google.android.ump:user-messaging-platform:4.0.0")
+  implementation("com.revenuecat.purchases:purchases:10.15.1")
   implementation(platform("androidx.compose:compose-bom:2026.06.01"))
   implementation("androidx.compose.ui:ui")
   implementation("androidx.compose.foundation:foundation")
@@ -119,4 +137,22 @@ dependencies {
   testImplementation("junit:junit:4.13.2")
   androidTestImplementation("androidx.test:runner:1.7.0")
   androidTestImplementation("androidx.test.ext:junit:1.3.0")
+}
+
+// Verification builds may be unsigned/test-only. Store publishing must use this explicit task.
+tasks.register("validateStoreConfiguration") {
+  doLast {
+    require(launchSetting("SUPPORT_EMAIL").contains("@")) { "Set SUPPORT_EMAIL before publishing." }
+    require(launchSetting("WEBSITE_URL").startsWith("https://")) { "Set the public WEBSITE_URL before publishing." }
+    require(launchSetting("REVENUECAT_PUBLIC_KEY").startsWith("goog_")) { "Set the public Google Play RevenueCat key." }
+    require(findProperty("PDF_TOOLS_UPLOAD_STORE_FILE") != null) { "Configure your own upload signing key." }
+    require(launchSetting("LIVE_ADS_ENABLED", "false").toBoolean()) { "The current Premium offer removes ads. Activate production ads before selling this offer." }
+    if (launchSetting("LIVE_ADS_ENABLED", "false").toBoolean()) {
+      require(launchSetting("ADMOB_APP_ID").startsWith("ca-app-pub-") && !launchSetting("ADMOB_APP_ID").contains("3940256099942544")) { "Set your own AdMob app ID." }
+      require(launchSetting("ADMOB_BANNER_ID").startsWith("ca-app-pub-") && !launchSetting("ADMOB_BANNER_ID").contains("3940256099942544")) { "Set your own banner ID." }
+    }
+  }
+}
+tasks.register("storeBundle") {
+  dependsOn("validateStoreConfiguration", "bundleRelease")
 }

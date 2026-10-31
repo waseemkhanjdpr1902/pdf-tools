@@ -14,5 +14,5 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "PDF Tools"
+rootProject.name = "PDF Pocket"
 include(":app")

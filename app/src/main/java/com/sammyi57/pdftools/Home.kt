@@ -70,6 +70,7 @@ fun Home() {
 
     if (!searching) {
       Stagger(0) { Hero(files) { nav.scan() } }
+      HomeAdvertisement()
       if (files.isNotEmpty()) Stagger(1) { RecentPanel(files.take(3)) { nav.show(Tab.Files) } }
       Row(
         Modifier.padding(top = 22.dp).horizontalScroll(rememberScrollState()),

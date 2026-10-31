@@ -27,3 +27,7 @@ keystore.properties
 # Local helper scripts (Play assets, policy page) stay on this machine
 /scripts/
 /store-screenshots/*.py
+
+# Python support-page generator cache
+__pycache__/
+*.pyc

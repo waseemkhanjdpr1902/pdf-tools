@@ -37,6 +37,11 @@ class MainActivity : ComponentActivity() {
     super.onDestroy()
   }
 
+  override fun onResume() {
+    super.onResume()
+    if (Terms.accepted()) Premium.refresh()
+  }
+
   // Some phones keep apps at 60 Hz unless asked; ask for the display's fastest mode at the current resolution.
   private fun preferFastestRefreshRate() {
     @Suppress("DEPRECATION")

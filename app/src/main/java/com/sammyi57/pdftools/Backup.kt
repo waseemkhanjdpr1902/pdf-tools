@@ -28,14 +28,14 @@ import java.net.URLEncoder
 import java.security.MessageDigest
 
 // Two-way Google Drive sync for the app's saved PDFs, run whenever a file changes.
-// Everything saved on the phone goes up to a "PDF Tools" folder in the user's Drive (files plus one level of folders),
+// Everything saved on the phone goes up to a "PDF Pocket" folder in the user's Drive (files plus one level of folders),
 // and edits, renames, moves and deletions on both sides go both ways. Files only in Drive stay there until the user
 // downloads them, so the app never fills the phone on its own. Uses the drive.file scope, so the app only sees what it
 // created. Each run is a three-way compare of phone, Drive and the last sync.
 
 private const val API = "https://www.googleapis.com/drive/v3"
 private const val UPLOAD = "https://www.googleapis.com/upload/drive/v3"
-private const val ROOT = "PDF Tools"
+private const val ROOT = "PDF Pocket"
 private const val FOLDER_MIME = "application/vnd.google-apps.folder"
 
 @Serializable
