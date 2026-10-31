@@ -49,6 +49,8 @@ Verify Android 7/11 external-viewer fallback and modern Android built-in viewer;
 
 ## Website and support contact
 
+Optional Google Drive sync also needs your own Google Cloud project: enable the Drive API, configure its OAuth consent screen, and create Android OAuth clients for the final package/signing SHA-1 (and a separate debug package/SHA-1 for local tests). Add test users while the consent screen is in testing. For Play builds, use the Play app-signing certificate SHA-1. Complete any Google verification required for your selected scopes before offering the integration publicly. The original developer's Google configuration will not authorise this newly branded app.
+
 Create the support Gmail, then regenerate the static website and embedded policy with the public email (not a password):
 
 ```bash
