@@ -4,7 +4,7 @@ An Android PDF utility built from [sammyZi/pdf-tools](https://github.com/sammyZi
 
 PDF Pocket keeps the existing local scanner, OCR and PDF tools and adds an optional ad-free subscription through Google Play/RevenueCat, a consent-aware AdMob home banner, purchase restoration and static support pages.
 
-**Development preview:** no live ad IDs, payment products, support email or signing secrets are committed. Debug uses Google test ads; subscriptions remain unavailable until a public RevenueCat SDK key and store products are configured. Release ads default off. A working build and device/store tests must be confirmed before release.
+**Development preview:** support contact is pdftoolsupport@gmail.com. No live ad IDs, payment products or signing secrets are committed. Debug uses Google test ads; subscriptions remain unavailable until a public RevenueCat SDK key and store products are configured. Release ads default off. A working build and device/store tests must be confirmed before release.
 
 ## Start here
 

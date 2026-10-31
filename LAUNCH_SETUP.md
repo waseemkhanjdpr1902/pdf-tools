@@ -9,7 +9,7 @@ Working store title: **PDF Pocket: Scan & PDF Tools** (28 characters). This name
 - UMP consent flow after in-app policy acceptance, with a Settings privacy-options entry when required.
 - RevenueCat Android SDK for Google Play receipt verification, product loading, purchases and restore. Monthly/annual offers use store-localised total price and period, with automatic-renewal disclosure. No hardcoded price, fake purchase or locally stored premium toggle.
 - Premium customer status refreshes on app resume. An unresolved configured entitlement suppresses ads until resolved; document tools stay available when offline.
-- Static website source in `docs/` and matching generated in-app policy text. The support email is deliberately unset. Temporary support uses this project's public issues; never post documents there.
+- Static website source in `docs/` and matching generated in-app policy text. Support email is pdftoolsupport@gmail.com, configured for the app and policies; never send private documents in support requests.
 
 ## Build and test
 
@@ -51,7 +51,7 @@ Verify Android 7/11 external-viewer fallback and modern Android built-in viewer;
 
 Optional Google Drive sync also needs your own Google Cloud project: enable the Drive API, configure its OAuth consent screen, and create Android OAuth clients for the final package/signing SHA-1 (and a separate debug package/SHA-1 for local tests). Add test users while the consent screen is in testing. For Play builds, use the Play app-signing certificate SHA-1. Complete any Google verification required for your selected scopes before offering the integration publicly. The original developer's Google configuration will not authorise this newly branded app.
 
-Create the support Gmail, then regenerate the static website and embedded policy with the public email (not a password):
+The public support email is configured. To change it later, regenerate the static website and embedded policy with the replacement public email (not a password), and update SUPPORT_EMAIL in gradle.properties:
 
 ```bash
 SUPPORT_EMAIL='your-created-address@gmail.com' python3 tools/build_support.py
@@ -68,7 +68,7 @@ Public IDs can be set as Gradle properties in local user configuration or enviro
 | Setting | Default | Production requirement |
 |---|---|---|
 | `REVENUECAT_PUBLIC_KEY` | Empty, billing disabled | Your public Google Play SDK key |
-| `SUPPORT_EMAIL` | Empty, public project link fallback | Your working support email |
+| `SUPPORT_EMAIL` | `pdftoolsupport@gmail.com` | Keep the app and policy contact consistent |
 | `WEBSITE_URL` | Empty, source policy fallback | Public HTTPS website |
 | `LIVE_ADS_ENABLED` | `false` in release | Set true only when ready |
 | `ADMOB_APP_ID` | Google test app | Your app ID if live ads enabled |

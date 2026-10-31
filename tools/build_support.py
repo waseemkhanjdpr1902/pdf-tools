@@ -5,7 +5,7 @@ import json
 import os
 
 ROOT = Path(__file__).resolve().parents[1]
-EMAIL = os.environ.get('SUPPORT_EMAIL', '').strip()
+EMAIL = os.environ.get('SUPPORT_EMAIL', 'pdftoolsupport@gmail.com').strip()
 CONTACT = EMAIL or 'Use the project support page: https://github.com/waseemkhanjdpr1902/pdf-tools/issues. Do not post documents or private payment details.'
 PRIVACY = '''Effective date: 31 October 2026. PDF Pocket is operated by the PDF Pocket project (GitHub: waseemkhanjdpr1902). This preview policy must be reviewed with the final support contact and SDK configuration before a store release.
 
