@@ -19,8 +19,8 @@ android {
     applicationId = "com.waseem.pdfpocket"
     minSdk = 24
     targetSdk = 36
-    versionCode = 3
-    versionName = "2.1.0"
+    versionCode = 4
+    versionName = "2.1.1"
     buildConfigField("String", "REVENUECAT_PUBLIC_KEY", quoted(launchSetting("REVENUECAT_PUBLIC_KEY")))
     buildConfigField("String", "PREMIUM_ENTITLEMENT", quoted("premium"))
     buildConfigField("String", "SUPPORT_EMAIL", quoted(launchSetting("SUPPORT_EMAIL")))
