@@ -145,9 +145,10 @@ tasks.register("validateStoreConfiguration") {
   doLast {
     require(launchSetting("SUPPORT_EMAIL").contains("@")) { "Set SUPPORT_EMAIL before publishing." }
     require(launchSetting("WEBSITE_URL").startsWith("https://")) { "Set the public WEBSITE_URL before publishing." }
-    require(launchSetting("REVENUECAT_PUBLIC_KEY").startsWith("goog_")) { "Set the public Google Play RevenueCat key." }
+    val revenueCatKey = launchSetting("REVENUECAT_PUBLIC_KEY")
+    require(revenueCatKey.isBlank() || revenueCatKey.startsWith("goog_")) { "Use the public Google Play RevenueCat key, or leave it empty for ads-only." }
     require(findProperty("PDF_TOOLS_UPLOAD_STORE_FILE") != null) { "Configure your own upload signing key." }
-    require(launchSetting("LIVE_ADS_ENABLED", "false").toBoolean()) { "The current Premium offer removes ads. Activate production ads before selling this offer." }
+    require(launchSetting("LIVE_ADS_ENABLED", "false").toBoolean()) { "Set LIVE_ADS_ENABLED=true and configure your own AdMob IDs for the ad-supported release." }
     if (launchSetting("LIVE_ADS_ENABLED", "false").toBoolean()) {
       require(launchSetting("ADMOB_APP_ID").startsWith("ca-app-pub-") && !launchSetting("ADMOB_APP_ID").contains("3940256099942544")) { "Set your own AdMob app ID." }
       require(launchSetting("ADMOB_BANNER_ID").startsWith("ca-app-pub-") && !launchSetting("ADMOB_BANNER_ID").contains("3940256099942544")) { "Set your own banner ID." }
