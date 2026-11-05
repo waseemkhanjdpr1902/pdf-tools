@@ -116,6 +116,8 @@ else "https://github.com/waseemkhanjdpr1902/pdf-tools/blob/feature/pdf-pocket-pr
 
 @Composable
 fun PremiumPanel() {
+  // Hide the offer until purchases are actually configured; the free tools still work.
+  if (!Premium.configured) return
   LaunchedEffect(Premium.configured) { Premium.loadPlans() }
   GroupLabel("PDF Pocket Premium")
   Group {

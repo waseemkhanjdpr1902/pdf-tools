@@ -29,6 +29,8 @@ Do the upstream device checks on a real Android phone as well:
 
 Verify Android 7/11 external-viewer fallback and modern Android built-in viewer; PDFs with passwords, large scans and multiple pages; offline operations; background/resume; and rotation/process recreation. The bundled OCR supports Latin text, not a promise of Hindi/Urdu recognition.
 
+For an ads-only launch, leave `REVENUECAT_PUBLIC_KEY` empty. The Premium offer is hidden until subscriptions are configured. Google Drive sign-in is optional and needs separate Google Cloud setup below.
+
 ## Google Play and RevenueCat
 
 1. Create the app in your existing Play Console using the final application ID.
@@ -67,7 +69,7 @@ Public IDs can be set as Gradle properties in local user configuration or enviro
 
 | Setting | Default | Production requirement |
 |---|---|---|
-| `REVENUECAT_PUBLIC_KEY` | Empty, billing disabled | Your public Google Play SDK key |
+| `REVENUECAT_PUBLIC_KEY` | Empty, billing disabled | Optional for ads-only; your public Google Play SDK key for subscriptions |
 | `SUPPORT_EMAIL` | `pdftoolsupport@gmail.com` | Keep the app and policy contact consistent |
 | `WEBSITE_URL` | Empty, source policy fallback | Public HTTPS website |
 | `LIVE_ADS_ENABLED` | `false` in release | Set true only when ready |
