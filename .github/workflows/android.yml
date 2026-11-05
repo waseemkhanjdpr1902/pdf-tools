@@ -2,7 +2,7 @@ name: Android verification
 
 on:
   pull_request:
-    branches: [master]
+    branches: [master, feature/pdf-pocket-premium]
   workflow_dispatch:
 
 permissions:
