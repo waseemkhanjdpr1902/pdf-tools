@@ -244,7 +244,7 @@ private fun kit() = Kit(c.page, c.ink, c.faint, c.accent, c.accentSoft)
 
 @Composable
 fun ToolArt(id: String, size: Dp = 40.dp, modifier: Modifier = Modifier) {
-  val draw = ART[id] ?: return
+  val draw = ART[if (id == "photoResize" || id == "signatureResize") "crop" else id] ?: return
   val k = kit()
   Canvas(modifier.size(size)) {
     scale(this.size.width / 48f, Offset.Zero) { Art(this, k).draw() }

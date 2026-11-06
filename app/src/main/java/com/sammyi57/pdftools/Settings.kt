@@ -169,8 +169,8 @@ private fun DriveBackup() {
   }
   Group {
     ListRow(
-      "Sync PDFs with Google Drive", first = true, lead = { Lead(I.googleDrive) },
-      subtitle = if (state.enabled) state.email ?: "Signed in" else "Keeps your PDFs and folders the same on this phone and in your Drive",
+      "Connect Google Drive", first = true, lead = { Lead(I.googleDrive) },
+      subtitle = if (state.enabled) state.email ?: "Signed in" else "Optional Google sign-in to back up and sync your saved PDFs",
     ) {
       if (busy) Spinner(c.accent) else Toggle(state.enabled) { on -> if (on) connect() else confirmOff = true }
     }

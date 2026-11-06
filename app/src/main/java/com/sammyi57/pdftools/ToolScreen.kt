@@ -129,6 +129,7 @@ fun ToolScreen(id: String, resume: Boolean) {
   var locked by remember { mutableStateOf<List<Picked>>(emptyList()) }
   var naming by remember { mutableStateOf<Pair<List<Output>, String>?>(null) }
   var parts by remember { mutableStateOf<List<Named>?>(null) } // a multi-file preview
+  val images = tool.input == Input.Images
   val multi = tool.input == Input.Pdfs
   val ready = files.size >= (if (multi) tool.min ?: 2 else 1)
   val hasEditor = tool.id in EDITOR_TITLES
@@ -162,7 +163,7 @@ fun ToolScreen(id: String, resume: Boolean) {
     }
     Unit
   }
-  val pickDevice = { scope.launch { addFiles(pickPdfs(multi)) }; Unit }
+  val pickDevice = { scope.launch { if (images) append(pickImages(false)) else addFiles(pickPdfs(multi)) }; Unit }
 
   val exec = { mode: String ->
     scope.launch {
@@ -174,7 +175,7 @@ fun ToolScreen(id: String, resume: Boolean) {
           val inputs = files.map { Named(it.name, File(it.path).readBytes()) }
           tool.run(inputs, opts)
         }
-        val base = stripPdf(files[0].name)
+        val base = if (images) files[0].name.substringBeforeLast('.') else stripPdf(files[0].name)
         val nameOf = { o: Output -> if (o.full) o.name else if (o.name.isNotEmpty()) "$base-${o.name}" else base }
         when {
           mode == "preview" && outs.size == 1 -> withContext(Dispatchers.IO) { saveTemp("${nameOf(outs[0])} (preview).pdf", outs[0].bytes) }.let { openFile(it.path, it.name) }
@@ -223,11 +224,11 @@ fun ToolScreen(id: String, resume: Boolean) {
       T(tool.desc, Type.body, Brand.cool.copy(alpha = 0.9f), Modifier.padding(top = 14.dp))
     }
 
-    StepHead(1, if (multi) "Choose PDFs" else "Choose a PDF")
+    StepHead(1, if (images) "Choose a photo or signature" else if (multi) "Choose PDFs" else "Choose a PDF")
     if (files.isEmpty()) {
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        PickerCard("Device Storage", "Drive, Downloads, Phone", I.fileDocumentOutline, Brand.cool, Brand.cherry, Modifier.weight(1f), pickDevice)
-        PickerCard("App Files", if (Backup.state.enabled) "Saved here or in Drive" else "Saved in PDF Pocket", I.folderOutline, c.accentSoft, c.accent, Modifier.weight(1f)) { appFiles = true }
+        PickerCard(if (images) "Photo Library" else "Device Storage", if (images) "Choose one image" else "Drive, Downloads, Phone", I.fileDocumentOutline, Brand.cool, Brand.cherry, Modifier.weight(1f), pickDevice)
+        if (!images) PickerCard("App Files", if (Backup.state.enabled) "Saved here or in Drive" else "Saved in PDF Pocket", I.folderOutline, c.accentSoft, c.accent, Modifier.weight(1f)) { appFiles = true }
       }
     } else {
       Group(Modifier.animateContentSize()) {
@@ -247,7 +248,8 @@ fun ToolScreen(id: String, resume: Boolean) {
     if (hasEditor || tool.opts.isNotEmpty()) {
       StepHead(2, EDITOR_TITLES[tool.id] ?: "Options")
       if (hasEditor) Editor(tool.id, EditorProps(files.firstOrNull(), opts, { fn -> opts = fn(opts) }) { error = it })
-      else Options(tool.opts, opts) { opts = it }
+      else Options(tool.opts, opts) { opts = it; results = emptyList(); error = "" }
+      if (tool.id == "compress" && opts.str("mode") == "size") T("The limit may be unreachable for text-heavy PDFs. Check the saved file size below before uploading.", Type.small, c.sub)
     }
 
     Btn(
@@ -271,6 +273,11 @@ fun ToolScreen(id: String, resume: Boolean) {
 
     AnimatedVisibility(results.isNotEmpty(), enter = expandVertically() + fadeIn(), exit = fadeOut()) {
       Column {
+        if (tool.id == "compress" && opts.str("mode") == "size") {
+          val limit = (opts.str("targetMB").toDoubleOrNull() ?: 0.0) * if (opts.str("sizeUnit") == "KB") 1024 else 1024 * 1024
+          val fits = results.all { it.size <= limit }
+          T(if (fits) "Saved PDF meets the selected size limit." else "Size limit not reached. This is the smallest result found; increase the limit or split the PDF.", Type.small, c.sub, Modifier.padding(top = 14.dp))
+        }
         GroupLabel(if (results.size > 1) "${results.size} files saved" else "Saved", "Open Files", { nav.show(Tab.Files) })
         Group {
           results.forEachIndexed { i, r ->

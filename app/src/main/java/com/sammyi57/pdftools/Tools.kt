@@ -98,7 +98,8 @@ private object O {
   // "level" (or unset, in older drafts and workflow steps) picks a strength; "size" squeezes until it fits a limit.
   val squeeze = seg("mode", "Compress by", listOf("level" to "Level", "size" to "Fit under a size"), "level")
   val quality = seg("quality", "Compression level", listOf("80" to "Light", "60" to "Balanced", "35" to "Strong"), "60") { it.str("mode") != "size" }
-  val target = OptDef.Text("targetMB", "Fit under (MB)", "2", "2", KeyboardType.Decimal, Regex("[^0-9.]")) { it.str("mode") == "size" }
+  val unit = seg("sizeUnit", "Size unit", listOf("MB" to "MB", "KB" to "KB"), "MB") { it.str("mode") == "size" }
+  val target = OptDef.Text("targetMB", "Maximum file size (selected unit)", "2", "2", KeyboardType.Decimal, Regex("[^0-9.]")) { it.str("mode") == "size" }
   val wmText = text("text", "Watermark text", "CONFIDENTIAL", "CONFIDENTIAL")
   val wmScale = seg("scale", "Size", listOf("0.6" to "Small", "1" to "Medium", "1.4" to "Large"), "1")
   val opacity = seg("opacity", "Opacity", listOf("0.1" to "10%", "0.2" to "20%", "0.35" to "35%"), "0.2")
@@ -120,7 +121,7 @@ private fun many(fn: (ByteArray, Opts) -> List<Named>) = { files: List<Named>, o
 
 // Workflow steps are the tools themselves: multi-PDF tools combine every current file, single-PDF tools run on each
 // file. Excluded: camera input, custom editors, non-PDF output, and password (no step can read the PDF after it).
-private val NOT_STEPS = setOf("scan", "workflow", "organize", "redact", "fillSign", "zip", "password", "unlock", "metadata")
+private val NOT_STEPS = setOf("scan", "workflow", "organize", "redact", "fillSign", "zip", "password", "unlock", "metadata", "photoResize", "signatureResize")
 fun stepTools() = TOOLS.filter { it.id !in NOT_STEPS }
 
 private fun runWorkflow(files: List<Named>, steps: List<WorkflowStep>): List<Output> {
@@ -142,7 +143,21 @@ private fun runWorkflow(files: List<Named>, steps: List<WorkflowStep>): List<Out
   return if (cur.size == 1) listOf(Output("processed", cur[0].bytes)) else cur.map { Output("${it.name}-processed", it.bytes, full = true) }
 }
 
+private fun imageResizeTool(id: String, title: String, width: String, height: String, kb: String) = Tool(
+  id, 0, title,
+  "Resize a photo or signature to exact pixel dimensions and a maximum JPEG file size, on your phone. Fit adds white margins; crop removes edges. Check your form's own requirements before uploading.",
+  "Save resized JPEG", "Resizing image", Input.Images, noPreview = true,
+  opts = listOf(
+    num("width", "Width (pixels)", width, width),
+    num("height", "Height (pixels)", height, height),
+    num("targetKB", "Maximum size (KB)", kb, kb),
+    seg("fit", "Image placement", listOf("fit" to "Fit whole image", "crop" to "Centre crop"), "fit"),
+  ),
+) { files, o -> listOf(Output("resized", resizeFormImage(files[0].bytes, o), "jpg")) }
+
 val TOOLS: List<Tool> = listOf(
+  imageResizeTool("photoResize", "Photo Resize to KB", "300", "400", "50"),
+  imageResizeTool("signatureResize", "Signature Resize to KB", "600", "200", "20"),
   Tool(
     "scan", 0, "Scan Document", "Use your camera to scan any document and export it as a PDF, processed on your phone.",
     "Create PDF", "Building PDF", Input.Images,
@@ -162,9 +177,9 @@ val TOOLS: List<Tool> = listOf(
   ) { files, o -> listOf(Output("mixed", alternate(files, o.bool("reverse")))) },
   Tool(
     "compress", 4, "Compress PDF", "Shrink the photos and scans inside a PDF so the file gets much smaller. Text stays sharp.",
-    "Compress PDF", "Recompressing images", Input.Pdf, opts = listOf(O.squeeze, O.quality, O.target),
+    "Compress PDF", "Recompressing images", Input.Pdf, opts = listOf(O.squeeze, O.quality, O.unit, O.target),
     run = one("compressed") { b, o ->
-      if (o.str("mode") == "size") compressToSize(b, o.str("targetMB")) else compress(b, o.str("quality").toIntOrNull() ?: 60)
+      if (o.str("mode") == "size") compressToSize(b, if (o.str("sizeUnit") == "KB") ((o.str("targetMB").toDoubleOrNull() ?: 0.0) / 1024).toString() else o.str("targetMB")) else compress(b, o.str("quality").toIntOrNull() ?: 60)
     },
   ),
   Tool(
