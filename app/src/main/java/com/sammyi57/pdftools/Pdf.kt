@@ -173,7 +173,7 @@ private val SIZE_STEPS = listOf(80 to 0, 60 to 2400, 45 to 2000, 35 to 1600, 25 
 fun compressToSize(bytes: ByteArray, targetMB: String): ByteArray {
   val target = ((targetMB.toFloatOrNull() ?: 0f) * 1024 * 1024).toLong()
   if (target <= 0) fail("Enter the size to fit under, in MB.")
-  if (bytes.size <= target) return compress(bytes, 80) // already fits: only the lossless tidy-up
+  if (bytes.size <= target) return bytes // already fits: preserve quality and the requested limit
   var best = bytes
   for ((q, side) in SIZE_STEPS) {
     val out = compress(bytes, q, side)
